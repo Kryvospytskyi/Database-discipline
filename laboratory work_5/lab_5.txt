@@ -1,0 +1,431 @@
+/*2.
+a.    Створення таблиць бази даних. Команди для створення таблиці повинні містити головний ключ, обмеження типу null / not null, default, check, створення зв'язків з умовами посилальної цілісності*/
+	DROP DATABASE IF EXISTS library;
+/*Створення Бази даних*/
+	CREATE DATABASE IF NOT EXISTS library;
+/*Нова основна таблиця*/
+	CREATE TABLE books2(
+	id_book INT(20) NOT NULL PRIMARY KEY,
+	code_book INT(10) NOT NULL DEFAULT 0,
+	new_book VARCHAR(3) NOT NULL DEFAULT 'No',
+	name_book VARCHAR(50) NOT NULL DEFAULT ' ',
+	price FLOAT(5, 2) NOT NULL,
+	publisher SMALLINT(2) NOT NULL DEFAULT 0,
+	pages INT(11) DEFAULT NULL,
+	format SMALLINT(2) DEFAULT NULL,
+	release_date DATE DEFAULT NULL,
+	tirage INT(11) DEFAULT NULL,
+	topic SMALLINT(3) DEFAULT NULL,
+	category SMALLINT(3) DEFAULT NULL
+) ENGINE=INNODB CHARACTER SET='UTF8MB4';
+CREATE INDEX idx_title ON
+    library.books2(name_book);
+/* Допоміжні таблиці. Створення цих таблиць*/
+CREATE TABLE Publishers(
+    id_publisher SMALLINT(2) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    publisher_name VARCHAR(20) UNIQUE NOT NULL
+);
+CREATE TABLE Formats(
+    id_format SMALLINT(2) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    format_name VARCHAR(12) UNIQUE NOT NULL
+);
+CREATE TABLE Topics(
+    id_topic SMALLINT(3) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    topic_name VARCHAR(26) UNIQUE NOT NULL
+);
+CREATE TABLE Categories(
+    id_category SMALLINT(3) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    category_name VARCHAR(25) UNIQUE NOT NULL
+);
+/*Ключі*/
+ALTER TABLE books2 ADD FOREIGN KEY (publisher) REFERENCES Publishers(id_publisher);
+ALTER TABLE books2 ADD FOREIGN KEY (format) REFERENCES Formats(id_format);
+ALTER TABLE books2 ADD FOREIGN KEY (topic) REFERENCES Topics(id_topic);
+ALTER TABLE books2 ADD FOREIGN KEY (category) REFERENCES Categories(id_category);
+
+/*b.    Завантаження даних в таблиці*/
+
+	INSERT INTO Formats(format_name) 
+	VALUES(
+	'n/m'), /*не вказано*/
+	('70х100/16'), 
+	('84х108/16'), 
+	('60х88/16'),
+	('84x100/16'),
+	('60x90/16'),
+	('60x84/16'),
+	('170x235');
+	
+	INSERT INTO Publishers(publisher_name) 
+	VALUES(
+	'n/m'),/*не вказано*/
+  	('Вильямс'),
+  	('Питер'),
+  	('МикроАрт'),
+  	('DiaSoft'),
+  	('ДМК'),
+  	('Триумф'),
+  	('Эком'),
+  	('Видавнича група BHV'),
+  	('Києво-Могилянська академія'),
+  	('Університет `Україна`'),
+  	('Вінниця: ВДТУ'),
+	("O'Reilly Media, Inc.");
+
+	INSERT INTO Categories(category_name) 
+	VALUES(
+	'n/m'), /*не вказано*/
+  	('Підручники'),
+  	('Апаратні засоби ПК'),
+  	('Захист і безпека ПК'),
+  	('Інші книги'),
+  	('Windows 2000'),
+  	('Linux'),
+  	('Unix'),
+  	('Інші операційні системи'),
+  	('C&C++'),
+  	('SQL'),
+	('Python');
+
+	INSERT INTO Topics(topic_name) 
+	VALUES(
+	'Використання ПК в цілому'),
+  	('Операційні системи'),
+  	('Програмування');
+
+	INSERT INTO books2(
+   	id_book,
+   	code_book,
+   	new_book,
+   	name_book,
+   	price,
+   	publisher,
+   	pages,
+   	format,
+   	release_date,
+   	tirage,
+  	topic,
+   	category) 
+
+	VALUES(
+    	2,
+    	5110,
+    	'No',
+    	'Апаратні засоби мультимедіа. Відеосистема РС',
+    	15.51,
+    	9,
+    	400,
+    	2,
+    	'2000-07-24',
+   	 5000,
+   	 1,
+    	2
+),
+(
+   	 8,
+    	4985,
+    	'No',
+    	'Засвой самостійно модернізацію та ремонт ПК за 24 години, 2-ге вид.',
+    	18.90,
+    	2,
+    	288,
+    	2,
+    	'2000-07-07',
+    	5000,
+    	1,
+    	2
+),
+(
+    	9,
+    	5141,
+    	'No',
+    	'Структури даних та алгоритми',
+    	37.80,
+    	2,
+    	384,
+    	2,
+    	'2000-09-29',
+    	5000,
+    	1,
+    	2
+),
+(
+    	20,
+    	5127,
+    	'Yes',
+    	'Автоматизація інженерно-графічних робіт',
+    	11.58,
+    	3,
+    	256,
+    	2,
+    	'2000-06-15',
+    	5000,
+    	1,
+    	2
+),
+(
+    	31,
+    	5110,
+    	'No',
+    	'Апаратні засоби мультимедіа. Відеосистема РС',
+    	15.51,
+    	9,
+    	400,
+    	2,
+    	'2000-07-24',
+    	5000,
+    	1,
+    	3
+),
+(
+   	46,
+    	5199,
+    	'No',
+    	'Залізо IBM 2001',
+    	30.07,
+    	4,
+    	368,
+    	2,
+    	'2000-02-12',
+    	5000,
+    	1,
+    	3
+),	
+(
+    	50,
+    	3851,
+    	'Yes',
+    	'Захист інформації та безпека комп`ютерних систем',
+    	26.00,
+    	5,
+    	480,
+    	3,
+    	NULL,
+    	5000,
+    	1,
+    	4
+),
+(
+    	58,
+    	3932,
+    	'No',
+    	'Як перетворити персональний комп`ютер на вимірювальний комплекс',
+    	7.65,
+    	6,
+    	144,
+    	4,
+    	'1999-09-06',
+    	5000,
+    	1,
+    	5
+),
+(
+    	59,
+    	4713,
+    	'No',
+    	'Plug-ins. Додаткові програми для музичних програм',
+    	11.41,
+    	6,
+    	144,
+    	2,
+    	'2000-02-22',
+    	5000,
+    	1,
+    	5
+),
+(
+   	175,
+    	5217,
+    	'No',
+    	'Windows МЕ. Найновіші версії програм',
+    	16.57,
+   	7,
+    	320,
+    	2,
+    	'2000-08-25',
+    	5000,
+    	2,
+    	6
+),
+(
+    	176,
+    	4829,
+    	'No',
+    	'Windows 2000 Professional крок за кроком з CD',
+    	27.25,
+    	8,
+    	320,
+    	2,
+    	'2000-04-28',
+    	5000,
+    	2,
+    	6
+),	
+(
+    	188,
+    	5170,
+    	'No',
+    	'Linux версії',
+    	24.43,
+    	6,
+    	346,
+    	2,
+    	'2000-09-29',
+    	5000,
+    	2,
+    	7
+),
+(
+    	191,
+    	860,
+    	'No',
+    	'Операційна система UNIX',
+    	3.50,
+    	9,
+    	395,
+    	5,
+    	'1997-05-05',
+    	5000,
+    	2,
+    	8
+),
+(
+    	203,
+    	44,
+    	'No',
+    	'Відповіді на актуальні запитання щодо OS/2 Warp',
+    	5.00,
+    	5,
+    	352,
+    	4,
+    	'1996-03-20',
+    	5000,
+    	2,
+    	9
+),
+(
+    	206,
+    	5176,
+   	'No',
+    	'Windows Ме. Супутник користувача',
+    	12.79,
+    	9,
+    	306,
+    	1,
+    	'2000-10-10',
+    	5000,
+    	2,
+    	9
+),
+(
+    	209,
+    	5462,
+    	'No',
+    	'Мова програмування С++. Лекції та вправи',
+    	29.00,
+    	5,
+    	656,
+    	3,
+    	'2000-12-12',
+    	5000,
+    	3,
+    	10
+),
+(
+    	210,
+    	4982,
+    	'No',
+    	'Мова програмування С. Лекції та вправи',
+    	29.00,
+    	5,
+    	432,
+    	3,
+    	'2000-12-07',
+    	5000,
+    	3,
+    	10
+),
+(
+    	220,
+    	4687,
+    	'No',
+    	'Ефективне використання C++ .50 рекомендацій щодо покращення ваших програм та проектів',
+    	17.60,
+    	6,
+    	240,
+    	2,
+    	'2000-03-02',
+    	5000,
+    	3,
+    	10
+),
+(
+    	222,
+    	235,
+    	'No',
+    	'Інформаційні системи і структури даних',
+    	NULL,
+    	10,
+    	418,
+    	6,
+   	 NULL,
+   	 100,
+   	 1,
+    	11
+),
+(
+    	225,
+    	8746,
+    	'YES',
+    	'Бази даних в інформаційних системах',
+    	NULL,
+    	11,
+    	418,
+    	7,
+    	'2018-07-25',
+    	500,
+    	3,
+   	5
+),
+(
+    	226,
+    	2154,
+    	'Yes',
+    	'Сервер на основі операційної системи FreeBSD 6.1',
+    	NULL,
+    	11,
+    	216,
+    	7,
+    	'2015-11-03',
+    	500,
+    	3,
+    	11
+),
+(
+    	245,
+    	2662,
+    	'No',
+    	'Організація баз даних та знань',
+   	NULL,
+    	12,
+    	208,
+    	6,
+    	'2001-10-10',
+    	1000,
+    	3,
+    	11
+),
+(
+    	247,
+    	5641,
+    	'Yes',
+    	'Організація баз даних та знань',
+    	NULL,
+    	9,
+    	384,
+    	2,
+    	'2021-12-15',
+    	5000,
+    	3,
+    	11
+);
