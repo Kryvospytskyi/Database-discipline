@@ -47,7 +47,10 @@
 	FROM books 
 	GROUP BY MONTH(release_date), YEAR(release_date); 
 13.Змінити п. 12 так щоб до складу статистики не увійшли дані з незаповненими датами.
-	
+	SELECT COUNT(name_book) AS 'Загальна кількість книг', SUM(price) AS 'Ціна', MIN(price) AS 'Мінімальна ціна', AVG(price) AS 'Середня вартість', MAX(price) AS 'Максимальна ціна' 
+	FROM books 
+	WHERE release_date IS NOT NULL 
+	GROUP BY MONTH(release_date), YEAR(release_date); 
 14.Змінити п. 12. Фільтр по спадаючій року і зростанню місяця.
 	SELECT COUNT(name_book) AS 'Загальна кількість книг', SUM(price) AS 'Ціна', MIN(price) AS 'Мінімальна ціна', AVG(price) AS 'Середня вартість', MAX(price) AS 'Максимальна ціна' 
 	FROM books 
@@ -66,7 +69,6 @@
 	SELECT publisher AS 'Видавництво', COUNT(name_book) AS 'Загальна кількість книг', SUM(price) AS 'Ціна', MIN(price) AS 'Мінімальна ціна', AVG(price) AS 'Середня вартість', MAX(price) AS 'Максимальна ціна' 
 	FROM books
 	GROUP BY publisher;
-
 18.Вивести статистику (див. 1) за темами і видавництвами. Фільтр по видавництвам.
 	SELECT publisher AS 'Видавництво', topic AS 'Тема книги', COUNT(name_book) AS 'Загальна кількість книг', SUM(price) AS 'Ціна', MIN(price) AS 'Мінімальна ціна', AVG(price) AS 'Середня вартість', MAX(price) AS 'Максимальна ціна' 
 	FROM books
