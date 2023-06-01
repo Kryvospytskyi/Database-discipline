@@ -1,0 +1,81 @@
+1.Вивести статистику: загальна кількість всіх книг, їх вартість, їх середню вартість, мінімальну і максимальну ціну
+	SELECT COUNT(name_book) AS 'Загальна кількість всіх книг', SUM(price) AS 'Ціна', AVG(price) AS 'Середня вартість', MIN(price) AS 'Мінімальна ціна', MAX(price) AS 'Максимальна ціна' 
+	FROM books GROUP BY new_book;
+2.Вивести загальну кількість всіх книг без урахування книг з непроставленою ціною
+	SELECT COUNT(name_book) 
+	FROM books 
+	WHERE price IS NOT NULL;
+3.Вивести статистику (див. 1) для книг новинка / не новинка
+	SELECT new_book  AS 'Новинка', COUNT(name_book) AS 'Кількість книг', SUM(price) AS 'Загальна ціна', AVG(price) AS 'Середня вартість', MIN(price) AS 'Мінімальна ціна', MAX(price) AS 'Максимальна ціна' 
+	FROM books GROUP BY new_book;
+4.Вивести статистику (див. 1) для книг за кожним роком видання
+	SELECT YEAR(release_date) AS 'Рік видання', COUNT(name_book) AS 'Кількість книг', SUM(price) AS 'Загальна ціна', AVG(price) AS 'Середня вартість', MIN(price) AS 'Мінімальна ціна', MAX(price) AS 'Максимальна ціна' 
+	FROM books GROUP BY YEAR(release_date);
+5.Змінити п.4, виключивши з статистики книги з ціною від 10 до 20
+	SELECT YEAR(release_date) AS 'Рік видання', COUNT(name_book) AS 'Кількість книг', SUM(price) AS 'Загальна ціна', AVG(price) AS 'Середня вартість', MIN(price) AS 'Мінімальна ціна', MAX(price) AS 'Максимальна ціна' 
+	FROM books 
+	WHERE price NOT BETWEEN 10 AND 20
+	GROUP BY YEAR(release_date);
+6.Змінити п.4. Відсортувати статистику по спадаючій кількості.
+	SELECT YEAR(release_date) AS 'Рік видання', COUNT(name_book) AS 'Кількість книг', SUM(price) AS 'Загальна ціна', AVG(price) AS 'Середня вартість', MIN(price) AS 'Мінімальна ціна', MAX(price) AS 'Максимальна ціна' 
+	FROM books 
+	WHERE price NOT BETWEEN 10 AND 20
+	GROUP BY YEAR(release_date) ORDER BY COUNT(name_book) DESC;
+7.Вивести загальну кількість кодів книг і кодів книг що не повторюються
+	SELECT COUNT(code_book) AS 'Загальна кількість кодів книг', COUNT(DISTINCT code_book) AS 'Коди книг, що не повторюються'
+	FROM books;
+8.Вивести статистику: загальна кількість і вартість книг по першій букві її назви
+	SELECT COUNT(name_book) AS 'Кількість книг назва, яких починається з даної літери', SUM(price) AS 'Загальна ціна' 
+	FROM books GROUP BY LEFT(name_book,1);
+9.Змінити п. 8, виключивши з статистики назви що починаються з англ. букви або з цифри.
+	SELECT COUNT(name_book) AS 'Кількість книг назва, яких починається з даної літери', SUM(price) AS 'Загальна ціна' 
+	FROM books 
+	WHERE LEFT(name_book,1) NOT REGEXP '[A-Z,a-z,0-9]' GROUP BY LEFT(name_book,1);
+10.Змінити п. 9 так щоб до складу статистики потрапили дані з роками більшими за 2000.
+	SELECT COUNT(name_book) AS 'Кількість книг назва, яких починається з даної літери', SUM(price) AS 'Загальна ціна' 
+	FROM books 
+	WHERE LEFT(name_book,1) NOT REGEXP '[A-Z,a-z,0-9]' AND YEAR(release_date)>2000
+	GROUP BY LEFT(name_book,1);
+11.Змінити п. 10. Відсортувати статистику по спадаючій перших букв назви.
+	SELECT COUNT(name_book) AS 'Кількість книг назва, яких починається з даної літери', SUM(price) AS 'Загальна ціна' 
+	FROM books 
+	WHERE LEFT(name_book,1) NOT REGEXP '[A-Z,a-z,0-9]' AND YEAR(release_date)>2000
+	GROUP BY LEFT(name_book,1)
+	ORDER BY LEFT(name_book,1) DESC;
+12.Вивести статистику (див. 1) по кожному місяцю кожного року.
+	SELECT COUNT(name_book) AS 'Загальна кількість книг', SUM(price) AS 'Ціна', MIN(price) AS 'Мінімальна ціна', AVG(price) AS 'Середня вартість', MAX(price) AS 'Максимальна ціна' 
+	FROM books 
+	GROUP BY MONTH(release_date), YEAR(release_date); 
+13.Змінити п. 12 так щоб до складу статистики не увійшли дані з незаповненими датами.
+	
+14.Змінити п. 12. Фільтр по спадаючій року і зростанню місяця.
+	SELECT COUNT(name_book) AS 'Загальна кількість книг', SUM(price) AS 'Ціна', MIN(price) AS 'Мінімальна ціна', AVG(price) AS 'Середня вартість', MAX(price) AS 'Максимальна ціна' 
+	FROM books 
+	WHERE release_date IS NOT NULL
+	GROUP BY MONTH(release_date), YEAR(release_date)
+	ORDER BY MONTH(release_date) ASC, YEAR(release_date) DESC; 
+15.Вивести статистику для книг новинка / не новинка: загальна ціна, загальна ціна в грн. / Євро / руб. Колонкам запиту дати назви за змістом.
+	SELECT new_book AS 'Новинка', SUM(price) AS 'Загальна ціна', SUM(price)*36.92 AS 'Загальна ціна в грн', SUM(price)*0.92 AS 'Загальна ціна в євро', SUM(price)*77.17 AS 'Загальна ціна в руб' 
+	FROM books 
+	GROUP BY new_book;
+16.Змінити п. 15 так щоб виводилася округлена до цілого числа (дол. / Грн. / Євро / руб.) Ціна.
+	SELECT new_book AS 'Новинка', ROUND(SUM(price),0) AS 'Загальна ціна', ROUND(SUM(price)*36.92,0) AS 'Загальна ціна в грн', ROUND(SUM(price)*0.92,0) AS 'Загальна ціна в євро', ROUND(SUM(price)*77.17,0) AS 'Загальна ціна в руб' 
+	FROM books 
+	GROUP BY new_book;
+17.Вивести статистику (див. 1) по видавництвах.
+	SELECT publisher AS 'Видавництво', COUNT(name_book) AS 'Загальна кількість книг', SUM(price) AS 'Ціна', MIN(price) AS 'Мінімальна ціна', AVG(price) AS 'Середня вартість', MAX(price) AS 'Максимальна ціна' 
+	FROM books
+	GROUP BY publisher;
+
+18.Вивести статистику (див. 1) за темами і видавництвами. Фільтр по видавництвам.
+	SELECT publisher AS 'Видавництво', topic AS 'Тема книги', COUNT(name_book) AS 'Загальна кількість книг', SUM(price) AS 'Ціна', MIN(price) AS 'Мінімальна ціна', AVG(price) AS 'Середня вартість', MAX(price) AS 'Максимальна ціна' 
+	FROM books
+	GROUP BY publisher, topic;
+19.Вивести статистику (див. 1) за категоріями, темами і видавництвами. Фільтр по видавництвам, темах, категоріям.
+	SELECT publisher AS 'Видавництво', topic AS 'Тема книги', category AS 'Категорія', COUNT(name_book) AS 'Загальна кількість книг', SUM(price) AS 'Ціна', MIN(price) AS 'Мінімальна ціна', AVG(price) AS 'Середня вартість', MAX(price) AS 'Максимальна ціна' 
+	FROM books
+	GROUP BY publisher, topic, category;
+20.Вивести список видавництв, у яких округлена до цілого ціна однієї сторінки більше 10 копійок.
+	SELECT publisher AS 'Видавництво', ROUND(price/pages,2) AS 'Ціна однієї сторінки' 
+	FROM books 
+	WHERE ROUND(price/pages,2)>=0.10; 
