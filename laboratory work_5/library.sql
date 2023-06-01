@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Час створення: Трв 25 2023 р., 08:40
+-- Час створення: Чрв 01 2023 р., 05:47
 -- Версія сервера: 10.4.27-MariaDB
 -- Версія PHP: 8.2.0
 
@@ -28,15 +28,15 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `books2` (
-  `num` int(20) NOT NULL,
-  `code` int(10) NOT NULL DEFAULT 0,
-  `is_new` varchar(3) NOT NULL DEFAULT 'No',
-  `name` varchar(50) NOT NULL DEFAULT ' ',
+  `id_book` int(20) NOT NULL,
+  `code_book` int(10) NOT NULL DEFAULT 0,
+  `new_book` varchar(3) NOT NULL DEFAULT 'No',
+  `name_book` varchar(50) NOT NULL DEFAULT ' ',
   `price` float(5,2) NOT NULL,
   `publisher` smallint(2) NOT NULL DEFAULT 0,
   `pages` int(11) DEFAULT NULL,
   `format` smallint(2) DEFAULT NULL,
-  `date` date DEFAULT NULL,
+  `release_date` date DEFAULT NULL,
   `tirage` int(11) DEFAULT NULL,
   `topic` smallint(3) DEFAULT NULL,
   `category` smallint(3) DEFAULT NULL
@@ -46,7 +46,7 @@ CREATE TABLE `books2` (
 -- Дамп даних таблиці `books2`
 --
 
-INSERT INTO `books2` (`num`, `code`, `is_new`, `name`, `price`, `publisher`, `pages`, `format`, `date`, `tirage`, `topic`, `category`) VALUES
+INSERT INTO `books2` (`id_book`, `code_book`, `new_book`, `name_book`, `price`, `publisher`, `pages`, `format`, `release_date`, `tirage`, `topic`, `category`) VALUES
 (2, 5110, 'No', 'Апаратні засоби мультимедіа. Відеосистема РС', 15.51, 9, 400, 2, '2000-07-24', 5000, 1, 2),
 (8, 4985, 'No', 'Засвой самостійно модернізацію та ремонт ПК за 24 ', 18.90, 2, 288, 2, '2000-07-07', 5000, 1, 2),
 (9, 5141, 'No', 'Структури даних та алгоритми', 37.80, 2, 384, 2, '2000-09-29', 5000, 1, 2),
@@ -90,6 +90,7 @@ INSERT INTO `categories` (`id_category`, `category_name`) VALUES
 (10, 'C&C++'),
 (7, 'Linux'),
 (1, 'n/m'),
+(12, 'Python'),
 (11, 'SQL'),
 (8, 'Unix'),
 (6, 'Windows 2000'),
@@ -115,8 +116,9 @@ CREATE TABLE `formats` (
 --
 
 INSERT INTO `formats` (`id_format`, `format_name`) VALUES
+(8, '170x235'),
 (7, '60x84/16'),
-(6, '60x9016'),
+(6, '60x90/16'),
 (4, '60х88/16'),
 (2, '70х100/16'),
 (5, '84x100/16'),
@@ -141,6 +143,7 @@ CREATE TABLE `publishers` (
 INSERT INTO `publishers` (`id_publisher`, `publisher_name`) VALUES
 (5, 'DiaSoft'),
 (1, 'n/m'),
+(13, 'O\'Reilly Media, Inc.'),
 (12, 'Вінниця: ВДТУ'),
 (9, 'Видавнича група BHV'),
 (2, 'Вильямс'),
@@ -180,8 +183,8 @@ INSERT INTO `topics` (`id_topic`, `topic_name`) VALUES
 -- Індекси таблиці `books2`
 --
 ALTER TABLE `books2`
-  ADD PRIMARY KEY (`num`),
-  ADD KEY `idx_title` (`name`),
+  ADD PRIMARY KEY (`id_book`),
+  ADD KEY `idx_title` (`name_book`),
   ADD KEY `publisher` (`publisher`),
   ADD KEY `format` (`format`),
   ADD KEY `topic` (`topic`),
@@ -223,19 +226,19 @@ ALTER TABLE `topics`
 -- AUTO_INCREMENT для таблиці `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id_category` smallint(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id_category` smallint(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT для таблиці `formats`
 --
 ALTER TABLE `formats`
-  MODIFY `id_format` smallint(2) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_format` smallint(2) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT для таблиці `publishers`
 --
 ALTER TABLE `publishers`
-  MODIFY `id_publisher` smallint(2) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id_publisher` smallint(2) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT для таблиці `topics`
