@@ -93,8 +93,6 @@
 
 20.Вивести відсортований в зворотному порядку загальний список перших слів, назв книг і категорій що не повторюються. Використовувати union.
 	SELECT DISTINCT name_book 
-	FROM(
-	SELECT REGEXP_SUBSTR(TRIM(books2.name_book),'^[^\\s]+') AS name_book FROM books2) 
-	UNION ALL(
-	SELECT REGEXP_SUBSTR(TRIM(categories.category_name),'^[^\\s]+') AS 'Перше слово назви книги і категорій що не повторюються' FROM categories) books2, categories 
+	FROM((SELECT REGEXP_SUBSTR(TRIM(books2.name_book),'^[^\\s]+') AS name_book FROM books2) 
+	UNION ALL(SELECT REGEXP_SUBSTR(TRIM(categories.category_name),'^[^\\s]+') AS 'Перше слово назви книги і категорій що не повторюються' FROM categories)) books2, categories 
 	ORDER BY name_book DESC;
