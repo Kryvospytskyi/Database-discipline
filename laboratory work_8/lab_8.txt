@@ -1,0 +1,154 @@
+Реалізувати набір тригерів, що реалізують такі ділові правила:
+1.    Кількість тем може бути в діапазоні від 5 до 10.
+
+	DELIMITER $$
+	CREATE TRIGGER trig1 AFTER INSERT ON books2
+	FOR EACH ROW
+	BEGIN
+		IF(SELECT COUNT(books2.topic) 
+		FROM books2 WHERE NEW.topic=books2.topic) NOT BETWEEN 5 AND 10
+		THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Кількість тем може бути в діапазоні від 5 до 10';
+		END IF;
+	END;
+	$$
+	DELIMITER ;
+
+2.    Новинкою може бути тільки книга видана в поточному році.
+
+	DELIMITER $$
+	CREATE TRIGGER trig2 BEFORE INSERT ON books2
+	FOR EACH ROW
+	BEGIN
+		IF(NEW.is_new='Yes' AND YEAR(NEW.release_date)!=YEAR(CURRENT_DATE)) THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Новинкою може бути тільки книга видана в поточному році';
+		END IF;
+	END
+	$$
+	DELIMITER ;
+
+3.    Книга з кількістю сторінок до 100 не може коштувати більше 10 $, до 200 - 20 $, до 300 - 30 $.
+
+	DELIMITER $$
+	CREATE TRIGGER trig3 BEFORE INSERT ON books2
+	FOR EACH ROW
+	BEGIN
+		IF(NEW.pages<100 AND NEW.price)>10 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Книга з кількістю сторінок до 100 не може коштувати більше 10 $';
+		ELSEIF( NEW.pages<200 AND NEW.price)>20 THEN SET @err2='Книга з кількістю сторінок до 200 не може коштувати більше 20 $';
+		ELSEIF(NEW.pages<300 AND NEW.price)>30 THEN SET @err3='Книга з кількістю сторінок до 300 не може коштувати більше 30 $';
+		END IF;
+	END;
+	$$
+	DELIMITER ;
+
+4.    Видавництво "BHV" не випускає книги накладом меншим 5000, а видавництво Diasoft - 10000.
+
+	DELIMITER $$
+	CREATE TRIGGER trig4 BEFORE INSERT ON books2
+	FOR EACH ROW
+		IF((NEW.publisher=9 AND NEW.tirage<5000) OR (NEW.publisher=5 AND NEW.tirage<10000))
+		THEN SIGNAL SQLSTATE '45001' SET MESSAGE_TEXT='Видавництво "BHV" не випускає книги накладом меншим 5000, а видавництво Diasoft - 10000.';
+	END IF
+	$$
+	DELIMITER ;
+
+5.    Книги з однаковим кодом повинні мати однакові дані.
+
+	DROP TRIGGER IF EXISTS trig5;
+	DELIMITER $$
+	CREATE TRIGGER trig5 BEFORE INSERT ON books2
+	FOR EACH ROW
+	BEGIN
+		SET @count_books=0;
+		ELECT COUNT(*) INTO @count_books FROM books2 WHERE code_book=NEW.code_book AND(
+			new_book!=NEW.new_book OR
+			name_book!=NEW.name_book OR
+			price!=NEW.price OR
+			publisher!=NEW.publisher OR
+			pages!=NEW.pages OR
+			format!=NEW.format OR
+			release_date!=NEW.release_date OR
+			tirage!=NEW.tirage OR
+			topic!=NEW.topic OR
+			category!=NEW.category);
+  		IF @count_books!=0 THEN SIGNAL SQLSTATE '45001' SET MESSAGE_TEXT='Книги з однаковим кодом повинні мати однакові дані';
+  		END IF;
+	END
+	$$
+	DELIMITER ;
+
+//NEW-це значення, яке з'являється під час оновлення даних.
+
+6.    При спробі видалення книги видається інформація про кількість видалених рядків. Якщо користувач не "dbo", то видалення забороняється.
+
+	DELIMITER $$
+	CREATE TRIGGER trig6 BEFORE DELETE ON books2
+	FOR EACH ROW
+	BEGIN
+		IF ((CURRENT_USER != 'dbo') AND (COLUMNS_UPDATED() & 1)!=0)
+		THEN 
+		SIGNAL SQLSTATE '45001' SET MESSAGE_TEXT='Ви не користувач dbo.Лише цей користувач може видаляти книги. ';
+		END IF;
+	END
+	$$
+	DELIMITER ;
+
+7.    Користувач "dbo" не має права змінювати ціну книги.
+
+	DROP TRIGGER IF EXISTS trig7;
+	DELIMITER $$
+	CREATE TRIGGER trig7 BEFORE UPDATE ON books2
+	FOR EACH ROW
+	BEGIN
+		IF ((CURRENT_USER != 'dbo') AND OLD.price!=NEW.price) THEN SIGNAL SQLSTATE '45001' SET MESSAGE_TEXT='Користувач "dbo" не має права змінювати ціну книги';
+		END IF;
+	END
+	$$
+	DELIMITER ;
+
+//NEW-це значення, яке з'являється під час оновлення даних.
+//OLD — це значення, яке вже було у таблиці.
+
+8.    Видавництва ДМК і Еком підручники не видають.
+
+	DROP TRIGGER IF EXISTS trig8;
+	DELIMITER $$
+	CREATE TRIGGER trig8 BEFORE INSERT ON books2
+	FOR EACH ROW
+	BEGIN
+		IF (NEW.publisher IN (6,8)) AND (NEW.category=2) THEN SIGNAL SQLSTATE '45001' SET MESSAGE_TEXT='Видавництва ДМК і Еком підручники не видають';
+		END IF;
+	END
+	$$
+	DELIMITER ;
+
+//NEW-це значення, яке з'являється під час оновлення даних.
+
+9.    Видавництво не може випустити більше 10 новинок протягом одного місяця поточного року.
+
+	DELIMITER $$
+	CREATE TRIGGER trig9 BEFORE INSERT ON books2
+	FOR EACH ROW
+	BEGIN
+		SET @book_new_book_from_publisher=0;
+		SELECT COUNT(*) INTO @book_new_book_from_publisher FROM books2 WHERE books2.publisher=NEW.publisher AND books2.new_book='Yes'AND
+   	 	YEAR(CURRENT_DATE())=YEAR(books2.release_date) AND MONTH(books2.release_date);
+   	 	IF (NEW.new_book='Yes' AND @book_new_book_from_publisher>10) THEN SIGNAL SQLSTATE '45001' SET MESSAGE_TEXT='Видавництво не може випустити більше 10 новинок протягом одного місяця поточного року';
+   	 	END IF;
+	END
+	$$
+	DELIMITER ;
+
+//NEW-це значення, яке з'являється під час оновлення даних.
+
+10.    Видавництво BHV не випускає книги формату 60х88 / 16.
+
+	DELIMITER $$
+	CREATE TRIGGER trig10 BEFORE INSERT ON books2
+	FOR EACH ROW
+	BEGIN
+		IF (NEW.publisher=9) AND (NEW.format=4) THEN SIGNAL SQLSTATE '45001' SET MESSAGE_TEXT='Видавництво BHV не випускає книги формату 60х88 / 16';
+   		END IF;
+	END
+	$$
+	DELIMITER ;
+
+//NEW-це значення, яке з'являється під час оновлення даних.
